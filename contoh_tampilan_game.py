@@ -49,26 +49,31 @@ class LayarKuis(MDScreen):
         random.shuffle(self.questions)
         self.score = 0
         self.index_soal = 0
+        self.lives = 3 # Inisialisasi nyawa
         self.tampilkan_soal()
 
     def tampilkan_soal(self):
         self.clear_widgets() # Bersihkan layar dari soal sebelumnya
         
-        if self.index_soal < len(self.questions):
+        if self.index_soal < len(self.questions) and self.lives > 0: # Cek nyawa juga
             q_data = self.questions[self.index_soal]
             self.start_time = time.time() # Mulai hitung waktu
             
             layout = MDBoxLayout(orientation='vertical', spacing=dp(15), padding=dp(20), pos_hint={"center_y": 0.5})
             
-            progress = MDLabel(text=f"Soal {self.index_soal + 1}/{len(self.questions)}", halign="right", theme_text_color="Hint")
-            
+            top_info_layout = MDBoxLayout(orientation='horizontal', size_hint_y=None, height=dp(40))
+            progress = MDLabel(text=f"Soal {self.index_soal + 1}/{len(self.questions)}", halign="left", theme_text_color="Hint")
+            lives_label = MDLabel(text=f"Nyawa: {self.lives} ❤️", halign="right", theme_text_color="Primary")
+            top_info_layout.add_widget(progress)
+            top_info_layout.add_widget(lives_label)
+
             pertanyaan = MDLabel(
                 text=q_data["question"],
                 halign="center",
                 font_style="H6"
             )
             
-            layout.add_widget(progress)
+            layout.add_widget(top_info_layout) # Tambahkan layout info atas
             layout.add_widget(pertanyaan)
             
             # Buat tombol untuk setiap opsi pilihan ganda
@@ -83,7 +88,7 @@ class LayarKuis(MDScreen):
             
             self.add_widget(layout)
         else:
-            # Jika soal habis, kirim skor ke layar hasil
+            # Jika soal habis atau nyawa habis, kirim skor ke layar hasil
             self.manager.get_screen('layar_hasil').skor_akhir = self.score
             self.manager.current = 'layar_hasil'
 
@@ -99,6 +104,13 @@ class LayarKuis(MDScreen):
                 self.score += 8
             else:
                 self.score += 5
+        else:
+            self.lives -= 1 # Kurangi nyawa jika jawaban salah
+            if self.lives == 0:
+                # Jika nyawa habis, langsung ke layar hasil
+                self.manager.get_screen('layar_hasil').skor_akhir = self.score
+                self.manager.current = 'layar_hasil'
+                return # Hentikan eksekusi lebih lanjut
                 
         self.index_soal += 1
         self.tampilkan_soal()
