@@ -130,7 +130,7 @@ class LayarHasil(MDScreen):
 
 class GameApp(MDApp):
     def build(self):
-        self.theme_cls.primary_palette = "Teal" # Warna tema aplikasi
+        self.theme_cls.primary_palette = "Orange" # Warna tema aplikasi
         
         sm = MDScreenManager()
         sm.add_widget(Beranda(name='layar_beranda'))
