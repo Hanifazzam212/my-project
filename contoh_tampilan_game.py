@@ -20,32 +20,63 @@ class Beranda(MDScreen):
             font_style="H4",
             theme_text_color="Primary"
         )
-        
-        btn_mulai = MDRaisedButton(
-            text="MULAI MAIN",
-            pos_hint={"center_x": 0.5},
-            size_hint=(0.8, None),
-            on_release=self.mulai_game
-        )
-        
         layout.add_widget(judul)
-        layout.add_widget(btn_mulai)
+        
+        # Tombol untuk pilihan level
+        levels = ["TK", "SD", "SMP", "SMA"]
+        for level_text in levels:
+            btn_level = MDRaisedButton(
+                text=f"LEVEL {level_text}",
+                pos_hint={"center_x": 0.5},
+                size_hint=(0.8, None),
+                on_release=lambda instance, level=level_text: self.start_level_game(level)
+            )
+            layout.add_widget(btn_level)
+
         self.add_widget(layout)
 
-    def mulai_game(self, *args):
+    def start_level_game(self, level, *args):
+        self.manager.get_screen('layar_kuis').selected_level = level
         self.manager.current = 'layar_kuis'
 
 class LayarKuis(MDScreen):
     """Layar tempat pertanyaan muncul"""
-    def on_enter(self):
-        # Memasukkan soal buatan Anda ke dalam aplikasi
-        self.questions = [
+    selected_level = None # Menambahkan atribut untuk level yang dipilih
+
+    # Definisikan daftar soal untuk setiap level
+    questions_data = {
+        "TK": [
+            {"question": "Berapa banyak jari di satu tangan?", "options": ["Satu", "Dua", "Lima", "Sepuluh"], "answer": 2},
+            {"question": "Apa warna langit di siang hari?", "options": ["Merah", "Biru", "Kuning", "Hijau"], "answer": 1},
+            {"question": "Hewan apa yang suka makan pisang?", "options": ["Kucing", "Anjing", "Monyet", "Ikan"], "answer": 2},
+        ],
+        "SD": [
+            {"question": "Berapa hasil dari 2 + 3?", "options": ["4", "5", "6", "7"], "answer": 1},
+            {"question": "Negara kita disebut apa?", "options": ["Malaysia", "Singapura", "Indonesia", "Thailand"], "answer": 2},
+            {"question": "Apa nama benda yang bisa kita gunakan untuk menulis di buku?", "options": ["Sendok", "Pensil", "Gunting", "Sisir"], "answer": 1},
+        ],
+        "SMP": [
+            {"question": "Berapa akar kuadrat dari 81?", "options": ["7", "8", "9", "10"], "answer": 2},
+            {"question": "Apa ibukota negara Indonesia?", "options": ["Bandung", "Surabaya", "Yogyakarta", "Jakarta"], "answer": 3},
+            {"question": "Jika sebuah segitiga memiliki tiga sisi yang sama panjang, itu disebut segitiga apa?", "options": ["Siku-siku", "Sama kaki", "Sama sisi", "Sembarang"], "answer": 2},
+        ],
+        "SMA": [
             {"question": "Jika 5 kucing menangkap 5 tikus dalam 5 menit, berapa lama 100 kucing menangkap 100 tikus?", "options": ["100 menit", "20 menit", "5 menit", "1 menit"], "answer": 2},
             {"question": "Sebuah rumah menghadap selatan. Seekor beruang datang ke rumah tersebut. Apa warna beruang itu?", "options": ["Putih", "Coklat", "Hitam", "Kuning"], "answer": 0},
             {"question": "Ayah punya 3 anak: Budi, Budi, dan Budi. Berapa nama anak perempuannya?", "options": ["Budi", "Tidak ada", "Budiarti", "Perempuan tidak disebutkan"], "answer": 1},
             {"question": "Mana yang lebih berat: 1 kg besi atau 1 kg kapas?", "options": ["Besi", "Kapas", "Sama berat", "Tidak bisa ditimbang"], "answer": 2},
             {"question": "Jika ada 12 ikan di akuarium dan 11 mati, berapa yang tersisa?", "options": ["1", "0", "11", "12"], "answer": 3} # Jawaban saya koreksi ke 12 karena bangkai ikan tetap di sana hehe
         ]
+    }
+
+    def on_enter(self):
+        # Memuat soal berdasarkan level yang dipilih
+        if self.selected_level and self.selected_level in self.questions_data:
+            self.questions = list(self.questions_data[self.selected_level]) # Menggunakan salinan daftar soal
+        else:
+            # Fallback jika tidak ada level yang dipilih atau level tidak valid
+            self.questions = list(self.questions_data["SMA"])
+            
         random.shuffle(self.questions)
         self.score = 0
         self.index_soal = 0
