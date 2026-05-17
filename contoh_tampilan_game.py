@@ -88,8 +88,9 @@ class LayarKuis(MDScreen):
             
             self.add_widget(layout)
         else:
-            # Jika soal habis atau nyawa habis, kirim skor ke layar hasil
+            # Jika soal habis, kirim skor ke layar hasil dengan status 'completed'
             self.manager.get_screen('layar_hasil').skor_akhir = self.score
+            self.manager.get_screen('layar_hasil').game_status = 'completed'
             self.manager.current = 'layar_hasil'
 
     def cek_jawaban(self, user_choice_index):
@@ -107,8 +108,9 @@ class LayarKuis(MDScreen):
         else:
             self.lives -= 1 # Kurangi nyawa jika jawaban salah
             if self.lives == 0:
-                # Jika nyawa habis, langsung ke layar hasil
+                # Jika nyawa habis, langsung ke layar hasil dengan status 'game_over'
                 self.manager.get_screen('layar_hasil').skor_akhir = self.score
+                self.manager.get_screen('layar_hasil').game_status = 'game_over'
                 self.manager.current = 'layar_hasil'
                 return # Hentikan eksekusi lebih lanjut
                 
@@ -118,11 +120,21 @@ class LayarKuis(MDScreen):
 class LayarHasil(MDScreen):
     """Layar untuk menampilkan nilai akhir"""
     skor_akhir = 0
+    game_status = 'completed' # Menambahkan status permainan
 
     def on_enter(self):
         self.clear_widgets()
         layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
         
+        if self.game_status == 'game_over':
+            game_over_label = MDLabel(
+                text="GAME OVER!",
+                halign="center",
+                font_style="H2",
+                theme_text_color="Error" # Warna merah untuk Game Over
+            )
+            layout.add_widget(game_over_label)
+
         hasil = MDLabel(
             text=f"SKOR AKHIR: {self.skor_akhir}",
             halign="center",
