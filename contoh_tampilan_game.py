@@ -4,7 +4,6 @@ from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.toolbar import MDToolbar # Import MDToolbar
 from kivy.metrics import dp
 import random
 import time
@@ -13,18 +12,7 @@ class Beranda(MDScreen):
     """Layar pertama saat aplikasi dibuka"""
     def __init__(self, **kw):
         super().__init__(**kw)
-        
-        # Main layout untuk seluruh layar
-        main_layout = MDBoxLayout(orientation='vertical')
-
-        # MDToolbar di bagian atas untuk tombol 'undo' dan judul layar
-        toolbar = MDToolbar(title="Pilih Level", title_align="center") # Judul untuk layar Beranda, dengan teks terpusat
-        # Tombol 'undo' di pojok kiri atas (menggunakan ikon panah kiri untuk navigasi)
-        toolbar.left_action_items = [['arrow-left', lambda x: self.go_back_action()]]
-        main_layout.add_widget(toolbar)
-
-        # Konten yang sudah ada (judul game dan tombol level)
-        content_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
+        layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
         
         judul = MDLabel(
             text="🧠 GAME KECERDASAN 🧠", 
@@ -32,7 +20,7 @@ class Beranda(MDScreen):
             font_style="H4",
             theme_text_color="Primary"
         )
-        content_layout.add_widget(judul)
+        layout.add_widget(judul)
         
         # Tombol untuk pilihan level
         levels = ["TK", "SD", "SMP", "SMA"]
@@ -43,18 +31,9 @@ class Beranda(MDScreen):
                 size_hint=(0.8, None),
                 on_release=lambda instance, level=level_text: self.start_level_game(level)
             )
-            content_layout.add_widget(btn_level)
+            layout.add_widget(btn_level)
 
-        main_layout.add_widget(content_layout) # Tambahkan content_layout ke main_layout
-        self.add_widget(main_layout) # Tambahkan main_layout ke layar
-
-    def go_back_action(self):
-        # Karena Beranda adalah layar awal, tombol 'back' di sini tidak memiliki tujuan layar sebelumnya.
-        # Ini bisa digunakan untuk keluar aplikasi atau hanya sebagai placeholder.
-        print("Tombol Kembali/Undo ditekan di layar Beranda (tidak ada layar sebelumnya untuk kembali).")
-        # Jika Anda ingin tombol ini untuk keluar aplikasi, Anda bisa uncomment baris di bawah:
-        # from kivymd.app import MDApp
-        # MDApp.get_running_app().stop()
+        self.add_widget(layout)
 
     def start_level_game(self, level, *args):
         self.manager.get_screen('layar_kuis').selected_level = level
