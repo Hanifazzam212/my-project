@@ -105,6 +105,7 @@ class LayarKuis(MDScreen):
             self.questions = list(self.questions_data["SMA"])
             
         random.shuffle(self.questions)
+        self.max_possible_score = len(self.questions) * 10 # Menghitung skor maksimum yang mungkin
         self.score = 0
         self.index_soal = 0
         self.lives = 3 # Inisialisasi nyawa
@@ -149,6 +150,7 @@ class LayarKuis(MDScreen):
             # Jika soal habis, kirim skor ke layar hasil dengan status 'completed'
             self.manager.get_screen('layar_hasil').skor_akhir = self.score
             self.manager.get_screen('layar_hasil').game_status = 'completed'
+            self.manager.get_screen('layar_hasil').max_possible_score = self.max_possible_score # Meneruskan skor maksimum
             self.manager.current = 'layar_hasil'
 
     def cek_jawaban(self, user_choice_index):
@@ -169,6 +171,7 @@ class LayarKuis(MDScreen):
                 # Jika nyawa habis, langsung ke layar hasil dengan status 'game_over'
                 self.manager.get_screen('layar_hasil').skor_akhir = self.score
                 self.manager.get_screen('layar_hasil').game_status = 'game_over'
+                self.manager.get_screen('layar_hasil').max_possible_score = self.max_possible_score # Meneruskan skor maksimum
                 self.manager.current = 'layar_hasil'
                 return # Hentikan eksekusi lebih lanjut
                 
@@ -178,7 +181,8 @@ class LayarKuis(MDScreen):
 class LayarHasil(MDScreen):
     """Layar untuk menampilkan nilai akhir"""
     skor_akhir = 0
-    game_status = 'completed' # Menambahkan status permainan
+    game_status = 'completed'
+    max_possible_score = 0 # Menambahkan atribut untuk skor maksimum yang mungkin
 
     def on_enter(self):
         self.clear_widgets()
@@ -189,15 +193,23 @@ class LayarHasil(MDScreen):
                 text="GAME OVER!",
                 halign="center",
                 font_style="H2",
-                theme_text_color="Error" # Warna merah untuk Game Over
+                theme_text_color="Error"
             )
             layout.add_widget(game_over_label)
+        elif self.game_status == 'completed' and self.skor_akhir == self.max_possible_score:
+            success_label = MDLabel(
+                text="SELAMAT KAMU BERHASIL!",
+                halign="center",
+                font_style="H3",
+                theme_text_color="Primary" # Akan menjadi hijau sesuai tema
+            )
+            layout.add_widget(success_label)
 
         hasil = MDLabel(
             text=f"SKOR AKHIR: {self.skor_akhir}",
             halign="center",
             font_style="H3",
-            theme_text_color="Primary"
+            theme_text_color="Primary" # Akan menjadi hijau sesuai tema
         )
         
         btn_ulang = MDRaisedButton(
@@ -212,7 +224,7 @@ class LayarHasil(MDScreen):
 
 class GameApp(MDApp):
     def build(self):
-        self.theme_cls.primary_palette = "Orange" # Warna tema aplikasi
+        self.theme_cls.primary_palette = "Green" # Warna tema aplikasi
         
         sm = MDScreenManager()
         sm.add_widget(Beranda(name='layar_beranda'))
