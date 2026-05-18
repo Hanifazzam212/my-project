@@ -3,11 +3,6 @@ from kivymd.uix.screen import MDScreen
 from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
-from kivymd.app import MDApp
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.screenmanager import MDScreenManager
-from kivymd.uix.button import MDRaisedButton
-from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.toolbar import MDToolbar # Import MDToolbar
 from kivy.metrics import dp
