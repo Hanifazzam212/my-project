@@ -70,16 +70,22 @@ class LayarKuis(MDScreen):
             {"question": "Berapa banyak jari di satu tangan?", "options": ["Satu", "Dua", "Lima", "Sepuluh"], "answer": 2},
             {"question": "Apa warna langit di siang hari?", "options": ["Merah", "Biru", "Kuning", "Hijau"], "answer": 1},
             {"question": "Hewan apa yang suka makan pisang?", "options": ["Kucing", "Anjing", "Monyet", "Ikan"], "answer": 2},
+            {"question": "Apa bunyi kucing?", "options": ["Guk", "Meong", "Moo", "Kwek"], "answer": 1},
+            {"question": "Bagian tubuh apa yang digunakan untuk melihat?", "options": ["Hidung", "Telinga", "Mata", "Mulut"], "answer": 2},
         ],
         "SD": [
             {"question": "Berapa hasil dari 2 + 3?", "options": ["4", "5", "6", "7"], "answer": 1},
             {"question": "Negara kita disebut apa?", "options": ["Malaysia", "Singapura", "Indonesia", "Thailand"], "answer": 2},
             {"question": "Apa nama benda yang bisa kita gunakan untuk menulis di buku?", "options": ["Sendok", "Pensil", "Gunting", "Sisir"], "answer": 1},
+            {"question": "Apa hewan tercepat di darat?", "options": ["Singa", "Harimau", "Cheetah", "Gajah"], "answer": 2},
+            {"question": "Berapa jumlah hari dalam seminggu?", "options": ["5", "6", "7", "8"], "answer": 2},
         ],
         "SMP": [
             {"question": "Berapa akar kuadrat dari 81?", "options": ["7", "8", "9", "10"], "answer": 2},
             {"question": "Apa ibukota negara Indonesia?", "options": ["Bandung", "Surabaya", "Yogyakarta", "Jakarta"], "answer": 3},
             {"question": "Jika sebuah segitiga memiliki tiga sisi yang sama panjang, itu disebut segitiga apa?", "options": ["Siku-siku", "Sama kaki", "Sama sisi", "Sembarang"], "answer": 2},
+            {"question": "Senyawa kimia dengan rumus H2O dikenal sebagai apa?", "options": ["Garam", "Gula", "Air", "Udara"], "answer": 2},
+            {"question": "Siapa penemu lampu pijar?", "options": ["Isaac Newton", "Albert Einstein", "Thomas Edison", "Nikola Tesla"], "answer": 2},
         ],
         "SMA": [
             {"question": "Jika 5 kucing menangkap 5 tikus dalam 5 menit, berapa lama 100 kucing menangkap 100 tikus?", "options": ["100 menit", "20 menit", "5 menit", "1 menit"], "answer": 2},
