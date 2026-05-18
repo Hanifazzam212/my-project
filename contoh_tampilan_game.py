@@ -4,7 +4,7 @@ from kivymd.uix.screenmanager import MDScreenManager
 from kivymd.uix.button import MDRaisedButton
 from kivymd.uix.label import MDLabel
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.toolbar import MDToolbar # Import MDToolbar
+from kivymd.uix.toolbar import MDTopAppBar # Import MDToolbar
 from kivy.metrics import dp
 import random
 import time
@@ -18,7 +18,7 @@ class Beranda(MDScreen):
         main_layout = MDBoxLayout(orientation='vertical')
 
         # MDToolbar di bagian atas untuk tombol 'undo' dan judul layar
-        toolbar = MDToolbar(title="Pilih Level", title_align="center") # Judul untuk layar Beranda, dengan teks terpusat
+        toolbar = MDTopAppBar(title="Pilih Level") # Judul untuk layar Beranda, dengan teks terpusat
         # Tombol 'undo' di pojok kiri atas (menggunakan ikon panah kiri untuk navigasi)
         toolbar.left_action_items = [['arrow-left', lambda x: self.go_back_action()]]
         main_layout.add_widget(toolbar)
