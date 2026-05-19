@@ -14,9 +14,14 @@ class LayarHome(MDScreen):
     def __init__(self, **kw):
         super().__init__(**kw)
 
-        main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.7})
+        # Main layout now spans the full screen vertically by default, padding added to control margins
+        main_layout = MDBoxLayout(orientation='vertical', padding=[dp(40), dp(40), dp(40), dp(40)]) 
 
-        title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100), pos_hint={"center_x": 0.5}) # Layout untuk judul dan subjudul
+        # Spacer at the top to push content down from the very top.
+        # A smaller size_hint_y here will push the title section higher up.
+        main_layout.add_widget(MDBoxLayout(size_hint_y=0.15)) # Flexible spacer 1
+
+        title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100), pos_hint={"center_x": 0.5}) # Fixed height for title section
 
         judul = MDLabel(
             text="KUIS KECERDASAN",
@@ -34,15 +39,23 @@ class LayarHome(MDScreen):
         )
         title_section_layout.add_widget(subtitle_label)
         
-        main_layout.add_widget(title_section_layout) # Tambahkan section layout ke main layout
+        main_layout.add_widget(title_section_layout) # Add title section to main layout
+
+        # Spacer to create flexible space between the title section and the button
+        # A larger size_hint_y here will create more space, pushing the button down relative to the title
+        main_layout.add_widget(MDBoxLayout(size_hint_y=0.4)) # Flexible spacer 2
 
         btn_mulai = MDRaisedButton(
             text="MULAI",
             pos_hint={"center_x": 0.5},
-            size_hint=(0.6, None),
+            size_hint=(0.6, None), # Fixed width, auto height
             on_release=lambda x: setattr(self.manager, 'current', 'layar_beranda')
         )
         main_layout.add_widget(btn_mulai)
+
+        # Spacer at the bottom to push content up from the very bottom.
+        # Adjusting this value can help keep the button in its desired vertical "semula" position.
+        main_layout.add_widget(MDBoxLayout(size_hint_y=0.2)) # Flexible spacer 3
 
         self.add_widget(main_layout)
 
