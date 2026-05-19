@@ -9,8 +9,33 @@ from kivy.metrics import dp
 import random
 import time
 
+class LayarHome(MDScreen):
+    """Layar pembuka aplikasi"""
+    def __init__(self, **kw):
+        super().__init__(**kw)
+
+        main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
+
+        judul = MDLabel(
+            text="KUIS KECERDASAN",
+            halign="center",
+            font_style="H2",
+            theme_text_color="Primary"
+        )
+        main_layout.add_widget(judul)
+
+        btn_mulai = MDRaisedButton(
+            text="MULAI",
+            pos_hint={"center_x": 0.5},
+            size_hint=(0.6, None),
+            on_release=lambda x: setattr(self.manager, 'current', 'layar_beranda')
+        )
+        main_layout.add_widget(btn_mulai)
+
+        self.add_widget(main_layout)
+
 class Beranda(MDScreen):
-    """Layar pertama saat aplikasi dibuka"""
+    """Layar untuk memilih level permainan"""
     def __init__(self, **kw):
         super().__init__(**kw)
         
@@ -49,12 +74,7 @@ class Beranda(MDScreen):
         self.add_widget(main_layout) # Tambahkan main_layout ke layar
 
     def go_back_action(self):
-        # Karena Beranda adalah layar awal, tombol 'back' di sini tidak memiliki tujuan layar sebelumnya.
-        # Ini bisa digunakan untuk keluar aplikasi atau hanya sebagai placeholder.
-        print("Tombol Kembali/Undo ditekan di layar Beranda (tidak ada layar sebelumnya untuk kembali).")
-        # Jika Anda ingin tombol ini untuk keluar aplikasi, Anda bisa uncomment baris di bawah:
-        # from kivymd.app import MDApp
-        # MDApp.get_running_app().stop()
+        self.manager.current = 'layar_home'
 
     def start_level_game(self, level, *args):
         self.manager.get_screen('layar_kuis').selected_level = level
@@ -227,9 +247,13 @@ class GameApp(MDApp):
         self.theme_cls.primary_palette = "Green" # Warna tema aplikasi
         
         sm = MDScreenManager()
+        sm.add_widget(LayarHome(name='layar_home'))
         sm.add_widget(Beranda(name='layar_beranda'))
         sm.add_widget(LayarKuis(name='layar_kuis'))
         sm.add_widget(LayarHasil(name='layar_hasil'))
+        
+        # Set the initial screen
+        sm.current = 'layar_home'
         
         return sm
 
