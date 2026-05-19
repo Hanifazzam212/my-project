@@ -16,13 +16,15 @@ class LayarHome(MDScreen):
 
         main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.6})
 
+        title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100)) # Layout untuk judul dan subjudul
+
         judul = MDLabel(
             text="KUIS KECERDASAN",
             halign="center",
             font_style="H2",
             theme_text_color="Primary"
         )
-        main_layout.add_widget(judul)
+        title_section_layout.add_widget(judul)
 
         subtitle_label = MDLabel(
             text="ayo uji kemampuanmu",
@@ -30,7 +32,9 @@ class LayarHome(MDScreen):
             font_style="Subtitle1",
             theme_text_color="Secondary"
         )
-        main_layout.add_widget(subtitle_label)
+        title_section_layout.add_widget(subtitle_label)
+        
+        main_layout.add_widget(title_section_layout) # Tambahkan section layout ke main layout
 
         btn_mulai = MDRaisedButton(
             text="MULAI",
