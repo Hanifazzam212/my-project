@@ -224,6 +224,14 @@ class LayarHasil(MDScreen):
                 theme_text_color="Primary" # Akan menjadi hijau sesuai tema
             )
             layout.add_widget(success_label)
+        elif self.game_status == 'completed' and self.skor_akhir == 40:
+            almost_correct_label = MDLabel(
+                text="kamu hampir benar kawan",
+                halign="center",
+                font_style="H4",
+                theme_text_color="Secondary"
+            )
+            layout.add_widget(almost_correct_label)
 
         hasil = MDLabel(
             text=f"SKOR AKHIR: {self.skor_akhir}",
