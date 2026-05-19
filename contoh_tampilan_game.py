@@ -14,7 +14,7 @@ class LayarHome(MDScreen):
     def __init__(self, **kw):
         super().__init__(**kw)
 
-        main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
+        main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.6})
 
         judul = MDLabel(
             text="KUIS KECERDASAN",
