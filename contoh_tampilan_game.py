@@ -27,7 +27,7 @@ class Beranda(MDScreen):
         content_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
         
         judul = MDLabel(
-            text="🧠 GAME KECERDASAN 🧠", 
+            text="PILIH LEVEL", 
             halign="center", 
             font_style="H4",
             theme_text_color="Primary"
