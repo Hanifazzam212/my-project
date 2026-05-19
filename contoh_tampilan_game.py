@@ -24,6 +24,14 @@ class LayarHome(MDScreen):
         )
         main_layout.add_widget(judul)
 
+        subtitle_label = MDLabel(
+            text="ayo uji kemampuanmu",
+            halign="center",
+            font_style="Subtitle1",
+            theme_text_color="Secondary"
+        )
+        main_layout.add_widget(subtitle_label)
+
         btn_mulai = MDRaisedButton(
             text="MULAI",
             pos_hint={"center_x": 0.5},
