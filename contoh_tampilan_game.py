@@ -16,7 +16,7 @@ class LayarHome(MDScreen):
 
         main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.6})
 
-        title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100)) # Layout untuk judul dan subjudul
+        title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100), pos_hint={"center_x": 0.5}) # Layout untuk judul dan subjudul
 
         judul = MDLabel(
             text="KUIS KECERDASAN",
