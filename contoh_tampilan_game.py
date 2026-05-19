@@ -14,7 +14,7 @@ class LayarHome(MDScreen):
     def __init__(self, **kw):
         super().__init__(**kw)
 
-        main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.6})
+        main_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.7})
 
         title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100), pos_hint={"center_x": 0.5}) # Layout untuk judul dan subjudul
 
