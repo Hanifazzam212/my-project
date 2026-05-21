@@ -56,7 +56,7 @@ class LayarHome(MDScreen):
         # Spacer at the bottom to push content up from the very bottom.
         # Adjusting this value can help keep the button in its desired vertical "semula" position.
         main_layout.add_widget(MDBoxLayout(size_hint_y=0.2)) # Flexible spacer 3
-
+ 
         self.add_widget(main_layout)
 
 class Beranda(MDScreen):
@@ -292,3 +292,4 @@ class GameApp(MDApp):
 
 if __name__ == "__main__":
     GameApp().run()
+print('Memuat antarmuka grafis (GUI) game kecerdasan...')
