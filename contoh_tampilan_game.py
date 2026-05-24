@@ -1,63 +1,92 @@
 from kivymd.app import MDApp
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.screenmanager import MDScreenManager
-from kivymd.uix.button import MDRaisedButton
-from kivymd.uix.label import MDLabel
+from kivymd.uix.button import MDRaisedButton, MDIconButton
+from kivymd.uix.label import MDLabel, MDIcon
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivymd.uix.toolbar import MDTopAppBar # Import MDToolbar
+from kivymd.uix.floatlayout import MDFloatLayout
+from kivymd.uix.toolbar import MDTopAppBar
+from kivymd.uix.progressbar import MDProgressBar
+from kivymd.uix.card import MDCard
+from kivy.clock import Clock
 from kivy.metrics import dp
+from kivy.core.window import Window
 import random
 import time
+
+# Simulasi ukuran layar mobile (Portrait)
+Window.size = (360, 640)
 
 class LayarHome(MDScreen):
     """Layar pembuka aplikasi"""
     def __init__(self, **kw):
         super().__init__(**kw)
-
-        # Main layout now spans the full screen vertically by default, padding added to control margins
-        main_layout = MDBoxLayout(orientation='vertical', padding=[dp(40), dp(40), dp(40), dp(40)]) 
-
-        # Spacer at the top to push content down from the very top.
-        # A smaller size_hint_y here will push the title section higher up.
-        main_layout.add_widget(MDBoxLayout(size_hint_y=0.15)) # Flexible spacer 1
-
-        title_section_layout = MDBoxLayout(orientation='vertical', spacing=0, size_hint_y=None, height=dp(100), pos_hint={"center_x": 0.5}) # Fixed height for title section
-
-        judul = MDLabel(
-            text="KUIS KECERDASAN",
-            halign="center",
-            font_style="H2",
-            theme_text_color="Primary"
-        )
-        title_section_layout.add_widget(judul)
-
-        subtitle_label = MDLabel(
-            text="ayo uji kemampuanmu",
-            halign="center",
-            font_style="Subtitle1",
-            theme_text_color="Secondary"
-        )
-        title_section_layout.add_widget(subtitle_label)
         
-        main_layout.add_widget(title_section_layout) # Add title section to main layout
+        # Gunakan FloatLayout sebagai root agar bisa memposisikan tombol di pojok
+        self.root_layout = MDFloatLayout()
 
-        # Spacer to create flexible space between the title section and the button
-        # A larger size_hint_y here will create more space, pushing the button down relative to the title
-        main_layout.add_widget(MDBoxLayout(size_hint_y=0.4)) # Flexible spacer 2
+        # Layout utama untuk konten tengah
+        content_layout = MDBoxLayout(orientation='vertical', padding=dp(30), spacing=dp(5))
+        content_layout.add_widget(MDBoxLayout(size_hint_y=0.25)) # Top spacer
+
+        content_layout.add_widget(MDLabel(
+            text="KUIS PINTAR",
+            halign="center",
+            font_style="H4", # Ukuran lebih mobile-friendly
+            theme_text_color="Primary",
+            bold=True,
+            size_hint_y=None,
+            height=dp(50)
+        ))
+
+        content_layout.add_widget(MDLabel(
+            text="Uji wawasan dan kecepatan berpikirmu!",
+            halign="center",
+            font_style="Body2", # Font lebih kecil untuk subtitle
+            theme_text_color="Secondary",
+            size_hint_y=None,
+            height=dp(30)
+        ))
+
+        content_layout.add_widget(MDBoxLayout(size_hint_y=0.3)) # Middle spacer
 
         btn_mulai = MDRaisedButton(
-            text="MULAI",
+            text="MULAI BERMAIN",
             pos_hint={"center_x": 0.5},
-            size_hint=(0.6, None), # Fixed width, auto height
+            size_hint=(0.8, None),
+            height=dp(56),
+            elevation=4,
             on_release=lambda x: setattr(self.manager, 'current', 'layar_beranda')
         )
-        main_layout.add_widget(btn_mulai)
-
-        # Spacer at the bottom to push content up from the very bottom.
-        # Adjusting this value can help keep the button in its desired vertical "semula" position.
-        main_layout.add_widget(MDBoxLayout(size_hint_y=0.2)) # Flexible spacer 3
+        content_layout.add_widget(btn_mulai)
+        content_layout.add_widget(MDBoxLayout(size_hint_y=0.2)) # Bottom spacer
  
-        self.add_widget(main_layout)
+        self.root_layout.add_widget(content_layout)
+
+        # Tombol Mode Terang/Gelap di pojok kanan atas
+        self.theme_btn = MDIconButton(
+            icon="weather-night",
+            pos_hint={"top": 0.98, "right": 0.98},
+            on_release=self.toggle_theme
+        )
+        self.root_layout.add_widget(self.theme_btn)
+        
+        self.add_widget(self.root_layout)
+
+    def toggle_theme(self, instance):
+        app = MDApp.get_running_app()
+        if app.theme_cls.theme_style == "Light":
+            app.theme_cls.theme_style = "Dark"
+            self.theme_btn.icon = "weather-sunny"
+            bg_color = [0.1, 0.1, 0.1, 1]
+        else:
+            app.theme_cls.theme_style = "Light"
+            self.theme_btn.icon = "weather-night"
+            bg_color = [0.98, 0.98, 0.98, 1]
+        
+        # Terapkan warna latar belakang ke SEMUA layar
+        for screen in self.manager.screens:
+            screen.md_bg_color = bg_color
 
 class Beranda(MDScreen):
     """Layar untuk memilih level permainan"""
@@ -67,36 +96,56 @@ class Beranda(MDScreen):
         # Main layout untuk seluruh layar
         main_layout = MDBoxLayout(orientation='vertical')
 
-        # MDToolbar di bagian atas untuk tombol 'undo' dan judul layar
-        toolbar = MDTopAppBar(title="Pilih Level") # Judul untuk layar Beranda, dengan teks terpusat
-        # Tombol 'undo' di pojok kiri atas (menggunakan ikon panah kiri untuk navigasi)
+        # MDToolbar di bagian atas
+        toolbar = MDTopAppBar(title="Pilih Jenjang")
         toolbar.left_action_items = [['arrow-left', lambda x: self.go_back_action()]]
         main_layout.add_widget(toolbar)
 
-        # Konten yang sudah ada (judul game dan tombol level)
-        content_layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
+        # Konten
+        content_layout = MDBoxLayout(orientation='vertical', spacing=dp(10), padding=dp(25))
         
-        judul = MDLabel(
-            text="PILIH LEVEL", 
+        content_layout.add_widget(MDLabel(
+            text="SIAP UNTUK TANTANGAN?", 
             halign="center", 
-            font_style="H4",
-            theme_text_color="Primary"
-        )
-        content_layout.add_widget(judul)
+            font_style="H6",
+            theme_text_color="Primary",
+            bold=True
+        ))
         
-        # Tombol untuk pilihan level
-        levels = ["TK", "SD", "SMP", "SMA"]
-        for level_text in levels:
+        content_layout.add_widget(MDLabel(
+            text="Pilih tingkat kesulitan",
+            halign="center",
+            font_style="Caption",
+            theme_text_color="Secondary"
+        ))
+        
+        content_layout.add_widget(MDBoxLayout(size_hint_y=0.1)) # Spacer
+
+        # Tombol untuk pilihan level dengan ikon
+        levels = [
+            ("TK", "baby-face-outline"),
+            ("SD", "school"),
+            ("SMP", "book-open-variant"),
+            ("SMA", "brain")
+        ]
+        
+        for level_text, icon_name in levels:
             btn_level = MDRaisedButton(
-                text=f"LEVEL {level_text}",
+                text=f"   LEVEL {level_text}",
                 pos_hint={"center_x": 0.5},
-                size_hint=(0.8, None),
+                size_hint=(0.9, None),
+                height=dp(50),
                 on_release=lambda instance, level=level_text: self.start_level_game(level)
             )
+            # Adding icon manually to MDRaisedButton text isn't ideal, 
+            # but KivyMD's MDRectangleFlatIconButton is another option.
+            # Let's use a simpler approach for now or switch to a better button.
             content_layout.add_widget(btn_level)
 
-        main_layout.add_widget(content_layout) # Tambahkan content_layout ke main_layout
-        self.add_widget(main_layout) # Tambahkan main_layout ke layar
+        content_layout.add_widget(MDBoxLayout(size_hint_y=0.2)) # Bottom spacer
+
+        main_layout.add_widget(content_layout)
+        self.add_widget(main_layout)
 
     def go_back_action(self):
         self.manager.current = 'layar_home'
@@ -108,6 +157,8 @@ class Beranda(MDScreen):
 class LayarKuis(MDScreen):
     """Layar tempat pertanyaan muncul"""
     selected_level = None # Menambahkan atribut untuk level yang dipilih
+    timer_event = None # Melacak event Clock
+    total_time = 10 # Waktu per soal dalam detik
 
     # Definisikan daftar soal untuk setiap level
     questions_data = {
@@ -172,126 +223,312 @@ class LayarKuis(MDScreen):
         self.score = 0
         self.index_soal = 0
         self.lives = 3 # Inisialisasi nyawa
+        self.timer_event = None
+        self.quiz_start_time = time.time() # Mulai waktu kuis keseluruhan
         self.tampilkan_soal()
+
+    def on_leave(self):
+        """Hentikan timer saat meninggalkan layar kuis"""
+        if self.timer_event:
+            Clock.unschedule(self.timer_event)
+            self.timer_event = None
 
     def tampilkan_soal(self):
         self.clear_widgets() # Bersihkan layar dari soal sebelumnya
+
+        # Hentikan timer sebelumnya jika ada
+        if self.timer_event:
+            Clock.unschedule(self.timer_event)
+            self.timer_event = None
         
         if self.index_soal < len(self.questions) and self.lives > 0: # Cek nyawa juga
             q_data = self.questions[self.index_soal]
             self.start_time = time.time() # Mulai hitung waktu
+            self.remaining_time = self.total_time
             
-            layout = MDBoxLayout(orientation='vertical', spacing=dp(15), padding=dp(20), pos_hint={"center_y": 0.5})
+            # Layout utama (tanpa center_y agar bisa diatur manual dengan spacer)
+            layout = MDBoxLayout(orientation='vertical', spacing=dp(10), padding=dp(15))
             
-            top_info_layout = MDBoxLayout(orientation='horizontal', size_hint_y=None, height=dp(40))
-            progress = MDLabel(text=f"Soal {self.index_soal + 1}/{len(self.questions)}", halign="left", theme_text_color="Hint")
-            lives_label = MDLabel(text=f"Nyawa: {self.lives} ❤️", halign="right", theme_text_color="Primary")
+            # 1. Bagian Atas: Waktu & Info
+            self.timer_bar = MDProgressBar(
+                value=100,
+                max=100,
+                type="determinate",
+                size_hint_y=None,
+                height=dp(4),
+                color=self.theme_cls.primary_color
+            )
+            layout.add_widget(self.timer_bar)
+
+            top_info_layout = MDBoxLayout(orientation='horizontal', size_hint_y=None, height=dp(30))
+            progress = MDLabel(text=f"Soal {self.index_soal + 1}/{len(self.questions)}", halign="left", theme_text_color="Hint", font_style="Caption")
+            lives_label = MDLabel(text=f"Nyawa: {self.lives} ❤️", halign="right", theme_text_color="Error", font_style="Caption")
             top_info_layout.add_widget(progress)
             top_info_layout.add_widget(lives_label)
+            layout.add_widget(top_info_layout)
 
+            # Spacer untuk mendorong soal ke tengah
+            layout.add_widget(MDBoxLayout(size_hint_y=0.4))
+
+            # 2. Bagian Tengah: Soal
+            card_pertanyaan = MDCard(
+                orientation='vertical',
+                padding=dp(15),
+                size_hint=(1, None),
+                height=dp(120),
+                elevation=2,
+                radius=[dp(12),],
+                ripple_behavior=True
+            )
             pertanyaan = MDLabel(
                 text=q_data["question"],
                 halign="center",
-                font_style="H6"
+                font_style="Subtitle1",
+                theme_text_color="Primary"
             )
+            card_pertanyaan.add_widget(pertanyaan)
+            layout.add_widget(card_pertanyaan)
             
-            layout.add_widget(top_info_layout) # Tambahkan layout info atas
-            layout.add_widget(pertanyaan)
-            
-            # Buat tombol untuk setiap opsi pilihan ganda
+            # Spacer untuk mendorong pilihan jawaban ke bawah
+            layout.add_widget(MDBoxLayout(size_hint_y=0.6))
+
+            # 3. Bagian Bawah: Pilihan Jawaban
+            self.option_buttons = []
+            options_layout = MDBoxLayout(orientation='vertical', spacing=dp(10), size_hint_y=None)
             for i, option in enumerate(q_data['options']):
                 btn = MDRaisedButton(
                     text=option,
                     pos_hint={"center_x": 0.5},
-                    size_hint=(0.9, None),
+                    size_hint=(1, None), # Full width untuk mobile
                     on_release=lambda instance, idx=i: self.cek_jawaban(idx)
                 )
-                layout.add_widget(btn)
+                options_layout.add_widget(btn)
+                self.option_buttons.append(btn)
+            layout.add_widget(options_layout)
             
+            # Padding bawah tambahan
+            layout.add_widget(MDBoxLayout(size_hint_y=0.1))
+
             self.add_widget(layout)
+            
+            # Mulai penghitungan mundur
+            self.timer_event = Clock.schedule_interval(self.update_timer, 0.1)
         else:
-            # Jika soal habis, kirim skor ke layar hasil dengan status 'completed'
-            self.manager.get_screen('layar_hasil').skor_akhir = self.score
-            self.manager.get_screen('layar_hasil').game_status = 'completed'
-            self.manager.get_screen('layar_hasil').max_possible_score = self.max_possible_score # Meneruskan skor maksimum
-            self.manager.current = 'layar_hasil'
+            self.selesai_kuis()
 
     def cek_jawaban(self, user_choice_index):
+        # Hentikan timer segera setelah ada jawaban
+        if self.timer_event:
+            Clock.unschedule(self.timer_event)
+            self.timer_event = None
+            
         q_data = self.questions[self.index_soal]
-        elapsed = time.time() - self.start_time
+        correct_answer = q_data['answer']
         
-        # Logika skor dari kode Anda
-        if user_choice_index == q_data['answer']:
-            if elapsed <= 10:
-                self.score += 10
-            elif elapsed <= 20:
-                self.score += 8
-            else:
-                self.score += 5
+        # Matikan semua tombol agar tidak bisa diklik lagi
+        for btn in self.option_buttons:
+            btn.disabled = True
+
+        if user_choice_index == correct_answer:
+            self.score += 10
+            # Beri warna hijau pada tombol yang benar
+            self.option_buttons[user_choice_index].md_bg_color = [0.1, 0.7, 0.1, 1] 
         else:
-            self.lives -= 1 # Kurangi nyawa jika jawaban salah
-            if self.lives == 0:
-                # Jika nyawa habis, langsung ke layar hasil dengan status 'game_over'
-                self.manager.get_screen('layar_hasil').skor_akhir = self.score
-                self.manager.get_screen('layar_hasil').game_status = 'game_over'
-                self.manager.get_screen('layar_hasil').max_possible_score = self.max_possible_score # Meneruskan skor maksimum
-                self.manager.current = 'layar_hasil'
-                return # Hentikan eksekusi lebih lanjut
+            self.lives -= 1
+            # Beri warna merah pada tombol yang salah
+            self.option_buttons[user_choice_index].md_bg_color = [0.8, 0.1, 0.1, 1]
+            # Tunjukkan jawaban yang benar dengan warna hijau
+            self.option_buttons[correct_answer].md_bg_color = [0.1, 0.7, 0.1, 1]
                 
-        self.index_soal += 1
-        self.tampilkan_soal()
+        # Beri jeda 1 detik sebelum lanjut ke soal berikutnya
+        Clock.schedule_once(self.next_question, 1.2)
+
+    def next_question(self, dt):
+        if self.lives <= 0:
+            self.selesai_kuis(game_over=True)
+        else:
+            self.index_soal += 1
+            self.tampilkan_soal()
+
+    def selesai_kuis(self, game_over=False):
+        total_time = int(time.time() - self.quiz_start_time)
+        self.manager.get_screen('layar_hasil').skor_akhir = self.score
+        self.manager.get_screen('layar_hasil').game_status = 'game_over' if game_over else 'completed'
+        self.manager.get_screen('layar_hasil').max_possible_score = self.max_possible_score
+        self.manager.get_screen('layar_hasil').sisa_nyawa = self.lives
+        self.manager.get_screen('layar_hasil').waktu_total = total_time
+        self.manager.current = 'layar_loading'
+
+    def update_timer(self, dt):
+        """Fungsi yang dipanggil setiap 0.1 detik untuk memperbarui progress bar"""
+        self.remaining_time -= dt
+        if self.remaining_time <= 0:
+            self.remaining_time = 0
+            self.timer_bar.value = 0
+            Clock.unschedule(self.timer_event)
+            self.timer_event = None
+            
+            # Waktu habis = kurangi nyawa
+            self.lives -= 1
+            if self.lives <= 0:
+                self.selesai_kuis(game_over=True)
+            else:
+                self.index_soal += 1
+                self.tampilkan_soal()
+        else:
+            # Perbarui nilai progress bar (100 -> 0)
+            self.timer_bar.value = (self.remaining_time / self.total_time) * 100
+
+class LayarLoading(MDScreen):
+    """Layar loading transisi sebelum hasil"""
+    def on_enter(self):
+        self.clear_widgets()
+        
+        layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
+        
+        layout.add_widget(MDBoxLayout(size_hint_y=0.3))
+        
+        # Spinner loading
+        from kivymd.uix.spinner import MDSpinner
+        spinner = MDSpinner(
+            size_hint=(None, None),
+            size=(dp(60), dp(60)),
+            pos_hint={"center_x": 0.5},
+            active=True,
+            line_width=dp(4)
+        )
+        layout.add_widget(spinner)
+        
+        layout.add_widget(MDLabel(
+            text="Sedang memproses jawaban...",
+            halign="center",
+            font_style="H6",
+            theme_text_color="Secondary"
+        ))
+        
+        layout.add_widget(MDBoxLayout(size_hint_y=0.4))
+        
+        self.add_widget(layout)
+        
+        # Simulasi proses (setTimeout di JS = Clock.schedule_once di Kivy)
+        Clock.schedule_once(self.go_to_result, 2.0)
+
+    def go_to_result(self, dt):
+        self.manager.current = 'layar_hasil'
 
 class LayarHasil(MDScreen):
     """Layar untuk menampilkan nilai akhir"""
     skor_akhir = 0
     game_status = 'completed'
-    max_possible_score = 0 # Menambahkan atribut untuk skor maksimum yang mungkin
+    max_possible_score = 0
+    sisa_nyawa = 0
+    waktu_total = 0
 
     def on_enter(self):
         self.clear_widgets()
-        layout = MDBoxLayout(orientation='vertical', spacing=dp(20), padding=dp(40), pos_hint={"center_y": 0.5})
+        
+        layout = MDBoxLayout(orientation='vertical', spacing=dp(15), padding=dp(15), pos_hint={"center_y": 0.5})
+        
+        # Header Info
+        header_box = MDBoxLayout(orientation='vertical', size_hint_y=None, height=dp(80), spacing=dp(2))
         
         if self.game_status == 'game_over':
-            game_over_label = MDLabel(
-                text="GAME OVER!",
-                halign="center",
-                font_style="H2",
-                theme_text_color="Error"
-            )
-            layout.add_widget(game_over_label)
-        elif self.game_status == 'completed' and self.skor_akhir == self.max_possible_score:
-            success_label = MDLabel(
-                text="SELAMAT KAMU BERHASIL!",
-                halign="center",
-                font_style="H3",
-                theme_text_color="Primary" # Akan menjadi hijau sesuai tema
-            )
-            layout.add_widget(success_label)
-        elif self.game_status == 'completed' and self.skor_akhir == 40:
-            almost_correct_label = MDLabel(
-                text="kamu hampir benar kawan",
-                halign="center",
-                font_style="H4",
-                theme_text_color="Secondary"
-            )
-            layout.add_widget(almost_correct_label)
+            msg_text = "GAME OVER!"
+            icon_color = "Error"
+        elif self.skor_akhir == self.max_possible_score and self.max_possible_score > 0:
+            msg_text = "SEMPURNA!"
+            icon_color = "Primary"
+        else:
+            msg_text = "SELESAI!"
+            icon_color = "Secondary"
 
-        hasil = MDLabel(
-            text=f"SKOR AKHIR: {self.skor_akhir}",
+        header_box.add_widget(MDLabel(
+            text=msg_text,
             halign="center",
-            font_style="H3",
-            theme_text_color="Primary" # Akan menjadi hijau sesuai tema
-        )
+            font_style="H5",
+            bold=True,
+            theme_text_color=icon_color
+        ))
+        header_box.add_widget(MDLabel(
+            text="Ringkasan hasil kuis",
+            halign="center",
+            font_style="Caption",
+            theme_text_color="Secondary"
+        ))
+        layout.add_widget(header_box)
+
+        # 3 Kotak Berjejer (Horizontal Layout)
+        stats_layout = MDBoxLayout(orientation='horizontal', spacing=dp(8), size_hint_y=None, height=dp(110))
+        
+        # Kotak Kiri: Sisa Nyawa (Merah)
+        card_lives = self.create_stat_card("NYAWA", f"{self.sisa_nyawa}", "heart", "Error", [0.9, 0.1, 0.1, 1])
+        
+        # Kotak Tengah: Poin (Kuning)
+        card_score = self.create_stat_card("POIN", f"{self.skor_akhir}", "star", "Primary", [1, 0.8, 0, 1])
+        
+        # Kotak Kanan: Waktu (Hijau)
+        card_time = self.create_stat_card("WAKTU", f"{self.waktu_total}s", "clock", "Secondary", [0.1, 0.7, 0.1, 1])
+        
+        stats_layout.add_widget(card_lives)
+        stats_layout.add_widget(card_score)
+        stats_layout.add_widget(card_time)
+        
+        layout.add_widget(stats_layout)
+        
+        layout.add_widget(MDBoxLayout(size_hint_y=0.1))
         
         btn_ulang = MDRaisedButton(
             text="MAIN LAGI",
             pos_hint={"center_x": 0.5},
+            size_hint=(0.8, None),
+            height=dp(56),
             on_release=lambda x: setattr(self.manager, 'current', 'layar_beranda')
         )
-        
-        layout.add_widget(hasil)
         layout.add_widget(btn_ulang)
+
+        btn_home = MDRaisedButton(
+            text="MENU UTAMA",
+            pos_hint={"center_x": 0.5},
+            size_hint=(0.8, None),
+            height=dp(56),
+            md_bg_color=[0.5, 0.5, 0.5, 1],
+            on_release=lambda x: setattr(self.manager, 'current', 'layar_home')
+        )
+        layout.add_widget(btn_home)
+        
         self.add_widget(layout)
+
+    def create_stat_card(self, title, value, icon, color, border_color):
+        card = MDCard(
+            orientation='vertical',
+            padding=dp(10),
+            elevation=2,
+            radius=[dp(15),],
+            spacing=dp(5),
+            line_color=border_color,
+            line_width=dp(2)
+        )
+        card.add_widget(MDIcon(
+            icon=icon,
+            halign="center",
+            font_size=dp(30),
+            theme_text_color=color,
+            pos_hint={"center_x": 0.5}
+        ))
+        card.add_widget(MDLabel(
+            text=value,
+            halign="center",
+            font_style="H5",
+            bold=True,
+            theme_text_color="Primary"
+        ))
+        card.add_widget(MDLabel(
+            text=title,
+            halign="center",
+            font_style="Caption",
+            theme_text_color="Secondary"
+        ))
+        return card
 
 class GameApp(MDApp):
     def build(self):
@@ -301,10 +538,15 @@ class GameApp(MDApp):
         sm.add_widget(LayarHome(name='layar_home'))
         sm.add_widget(Beranda(name='layar_beranda'))
         sm.add_widget(LayarKuis(name='layar_kuis'))
+        sm.add_widget(LayarLoading(name='layar_loading'))
         sm.add_widget(LayarHasil(name='layar_hasil'))
         
         # Set the initial screen
         sm.current = 'layar_home'
+        
+        # Inisialisasi warna background awal (Light Mode)
+        for screen in sm.screens:
+            screen.md_bg_color = [0.98, 0.98, 0.98, 1]
         
         return sm
 
