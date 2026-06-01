@@ -365,19 +365,31 @@ class LayarKuis(MDScreen):
         if self.remaining_time <= 0:
             self.remaining_time = 0
             self.timer_bar.value = 0
-            Clock.unschedule(self.timer_event)
-            self.timer_event = None
+            if self.timer_event:
+                Clock.unschedule(self.timer_event)
+                self.timer_event = None
             
             # Waktu habis = kurangi nyawa
             self.lives -= 1
-            if self.lives <= 0:
-                self.selesai_kuis(game_over=True)
-            else:
-                self.index_soal += 1
-                self.tampilkan_soal()
+            
+            # Matikan semua tombol agar tidak bisa diklik
+            for btn in self.option_buttons:
+                btn.disabled = True
+            
+            # Tunjukkan jawaban yang benar
+            q_data = self.questions[self.index_soal]
+            correct_answer = q_data['answer']
+            self.option_buttons[correct_answer].md_bg_color = [0.1, 0.7, 0.1, 1]
+            
+            # Beri jeda 1.2 detik sebelum lanjut agar pemain tahu waktunya habis
+            Clock.schedule_once(self.next_question, 1.2)
         else:
             # Perbarui nilai progress bar (100 -> 0)
             self.timer_bar.value = (self.remaining_time / self.total_time) * 100
+            
+            # Beri warna merah jika waktu kritis (< 3 detik)
+            if self.remaining_time < 3:
+                self.timer_bar.color = [0.8, 0.1, 0.1, 1]
 
 class LayarLoading(MDScreen):
     """Layar loading transisi sebelum hasil"""
